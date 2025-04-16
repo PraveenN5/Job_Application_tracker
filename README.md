@@ -18,8 +18,3 @@ Easily manage the companies you've applied to, track your progress, and stay org
 - JavaScript (Vanilla)  
 - LocalStorage
 
-## 📦 Getting Started
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/job-application-tracker.git
