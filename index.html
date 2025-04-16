@@ -1,0 +1,2027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Application Tracker</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #6366f1;
+    --primary-light: #818cf8;
+    --primary-dark: #4f46e5;
+    --secondary: #f3f4f6;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --info: #3b82f6;
+    --dark: #1f2937;
+    --light: #f9fafb;
+    --gray: #6b7280;
+    --gray-light: #e5e7eb;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --transition: all 0.3s ease;
+    --radius: 8px;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  body {
+    background-color: #f5f5f5;
+    color: var(--dark);
+    line-height: 1.6;
+    min-height: 100vh;
+    background-image: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    position: relative;
+  }
+
+  .header-left {
+    text-align: center;
+  }
+
+  .header-right {
+    text-align: right;
+  }
+
+  .user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .user-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--primary-dark);
+  }
+
+  .user-title {
+    font-size: 0.85rem;
+    color: var(--gray);
+  }
+
+  .header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    color: var(--primary-dark);
+    position: relative;
+    display: inline-block;
+  }
+
+  .header h1::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-light), var(--primary-dark));
+    border-radius: 2px;
+  }
+
+  .header p {
+    color: var(--gray);
+    font-size: 1.1rem;
+  }
+
+  /* Tab Navigation */
+  .tabs {
+    display: flex;
+    background-color: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 25px;
+    overflow: hidden;
+  }
+
+  .tab-button {
+    flex: 1;
+    padding: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--gray);
+    position: relative;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .tab-button:hover {
+    color: var(--primary);
+    background-color: rgba(99, 102, 241, 0.05);
+  }
+
+  .tab-button.active {
+    color: var(--primary-dark);
+    background-color: rgba(99, 102, 241, 0.1);
+  }
+
+  .tab-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-light), var(--primary-dark));
+  }
+
+  .tab-content {
+    display: none;
+    animation: fadeIn 0.5s ease;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Form Styles */
+  .form-controls {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 10px;
+    background-color: white;
+    padding: 15px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+
+  .search-filter {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+    align-items: center;
+  }
+
+  .search-box {
+    position: relative;
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .search-box i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray);
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 10px;
+  }
+
+  input, select, button, textarea {
+    padding: 8px 12px;
+    border: 1px solid var(--gray-light);
+    border-radius: var(--radius);
+    font-size: 13px;
+    transition: var(--transition);
+  }
+
+  input[type="text"], input[type="date"], select {
+    width: 100%;
+  }
+
+  input[type="text"] {
+    padding-left: 35px;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+  }
+
+  button {
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: var(--transition);
+    font-size: 12px;
+  }
+
+  .btn-primary {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: 8px 14px;
+  }
+
+  .btn-primary:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+
+  .btn-secondary {
+    background-color: white;
+    color: var(--dark);
+    border: 1px solid var(--gray-light);
+    padding: 8px 14px;
+  }
+
+  .btn-secondary:hover {
+    background-color: var(--secondary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+
+  .btn-danger {
+    background-color: var(--danger);
+    color: white;
+    border: none;
+  }
+
+  .btn-danger:hover {
+    background-color: #dc2626;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+
+  /* Table Styles */
+  .card {
+    background-color: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    margin-bottom: 25px;
+    transition: var(--transition);
+  }
+
+  .card:hover {
+    box-shadow: var(--shadow-lg);
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    padding: 12px 15px;
+    text-align: left;
+  }
+
+  th {
+    background-color: var(--secondary);
+    font-weight: 600;
+    color: var(--dark);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  tr {
+    border-bottom: 1px solid var(--gray-light);
+    transition: var(--transition);
+  }
+
+  tr:last-child {
+    border-bottom: none;
+  }
+
+  tr:hover {
+    background-color: rgba(99, 102, 241, 0.05);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--gray);
+  }
+
+  .empty-state i {
+    font-size: 40px;
+    margin-bottom: 15px;
+    color: var(--gray-light);
+  }
+
+  .empty-state p {
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+
+  /* Status Badge Styles */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    gap: 4px;
+  }
+
+  .status-applied {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: var(--info);
+  }
+
+  .status-interview {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: var(--warning);
+  }
+
+  .status-offer {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+  }
+
+  .status-rejected {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+  }
+
+  .status-ghosted {
+    background-color: rgba(107, 114, 128, 0.1);
+    color: var(--gray);
+  }
+
+  /* Action Buttons */
+  .action-btn {
+    padding: 5px 8px;
+    border-radius: var(--radius);
+    font-size: 11px;
+    transition: var(--transition);
+  }
+
+  .edit-btn {
+    background-color: rgba(99, 102, 241, 0.1);
+    color: var(--primary);
+    border: none;
+  }
+
+  .edit-btn:hover {
+    background-color: var(--primary);
+    color: white;
+  }
+
+  .delete-btn {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+    border: none;
+  }
+
+  .delete-btn:hover {
+    background-color: var(--danger);
+    color: white;
+  }
+
+  .view-btn {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+    border: none;
+  }
+
+  .view-btn:hover {
+    background-color: var(--success);
+    color: white;
+  }
+
+  /* Modal Styles */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .modal {
+    background-color: white;
+    border-radius: var(--radius);
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .modal-overlay.active .modal {
+    transform: scale(1);
+  }
+
+  .modal-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--gray-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--primary-dark);
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--gray);
+    transition: var(--transition);
+  }
+
+  .modal-close:hover {
+    color: var(--danger);
+    transform: rotate(90deg);
+  }
+
+  .modal-body {
+    padding: 20px;
+  }
+
+  .modal-footer {
+    padding: 15px 20px;
+    border-top: 1px solid var(--gray-light);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  /* Form Layout */
+  .form-group {
+    margin-bottom: 15px;
+  }
+
+  .form-label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+    color: var(--dark);
+    font-size: 13px;
+  }
+
+  .form-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+
+  .form-col {
+    flex: 1;
+  }
+
+  /* Statistics Styles */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 25px;
+  }
+
+  .stat-card {
+    background-color: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px;
+    text-align: center;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(90deg, var(--primary-light), var(--primary-dark));
+  }
+
+  .stat-icon {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: var(--primary);
+    background-color: rgba(99, 102, 241, 0.1);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+  }
+
+  .stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin-bottom: 5px;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--dark);
+    margin-bottom: 5px;
+  }
+
+  .stat-detail {
+    font-size: 12px;
+    color: var(--gray);
+    margin-top: 10px;
+  }
+
+  .card-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--gray-light);
+  }
+
+  .card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--primary-dark);
+    margin: 0;
+  }
+
+  .card-body {
+    padding: 20px;
+  }
+
+  .progress-container {
+    margin-bottom: 20px;
+  }
+
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  .progress-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .dot-applied { background-color: var(--info); }
+  .dot-interview { background-color: var(--warning); }
+  .dot-offer { background-color: var(--success); }
+  .dot-rejected { background-color: var(--danger); }
+  .dot-ghosted { background-color: var(--gray); }
+
+  .progress-bar-container {
+    height: 8px;
+    background-color: var(--gray-light);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1s ease-in-out;
+  }
+
+  .progress-applied { background-color: var(--info); }
+  .progress-interview { background-color: var(--warning); }
+  .progress-offer { background-color: var(--success); }
+  .progress-rejected { background-color: var(--danger); }
+  .progress-ghosted { background-color: var(--gray); }
+
+  /* Toast Notification */
+  .toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1001;
+  }
+
+  .toast {
+    background-color: white;
+    color: var(--dark);
+    padding: 12px 15px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideIn 0.3s ease, fadeOut 0.5s ease 2.5s forwards;
+    max-width: 300px;
+    font-size: 13px;
+  }
+
+  .toast.success {
+    border-left: 4px solid var(--success);
+  }
+
+  .toast.error {
+    border-left: 4px solid var(--danger);
+  }
+
+  .toast i {
+    font-size: 18px;
+  }
+
+  .toast.success i {
+    color: var(--success);
+  }
+
+  .toast.error i {
+    color: var(--danger);
+  }
+
+  @keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  @keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; visibility: hidden; }
+  }
+
+  /* Company Details Styles */
+  #companyDetails {
+    display: none;
+    animation: fadeIn 0.5s ease;
+  }
+
+  .back-button {
+    margin-bottom: 15px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--primary);
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: var(--transition);
+    background: none;
+    border: none;
+  }
+
+  .back-button:hover {
+    color: var(--primary-dark);
+  }
+
+  .company-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .company-name {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--primary-dark);
+  }
+
+  .company-logo {
+    width: 60px;
+    height: 60px;
+    background-color: var(--secondary);
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: var(--primary);
+  }
+
+  .company-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .company-info-item {
+    background-color: var(--secondary);
+    padding: 15px;
+    border-radius: var(--radius);
+  }
+
+  .info-label {
+    font-size: 12px;
+    color: var(--gray);
+    margin-bottom: 5px;
+  }
+
+  .info-value {
+    font-weight: 500;
+    color: var(--dark);
+  }
+
+  .section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--primary-dark);
+    margin: 25px 0 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-title i {
+    color: var(--primary);
+  }
+
+  .application-history {
+    margin-top: 20px;
+  }
+
+  .timeline {
+    position: relative;
+    padding-left: 30px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 8px;
+    width: 2px;
+    background-color: var(--gray-light);
+  }
+
+  .timeline-item {
+    position: relative;
+    margin-bottom: 20px;
+  }
+
+  .timeline-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .timeline-dot {
+    position: absolute;
+    left: -30px;
+    top: 0;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: var(--primary);
+    border: 3px solid white;
+  }
+
+  .timeline-date {
+    font-size: 12px;
+    color: var(--gray);
+    margin-bottom: 5px;
+  }
+
+  .timeline-content {
+    background-color: white;
+    padding: 15px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+
+  .timeline-title {
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: var(--dark);
+  }
+
+  .timeline-description {
+    font-size: 13px;
+    color: var(--gray);
+  }
+
+  .notes-section {
+    background-color: white;
+    padding: 15px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-top: 20px;
+  }
+
+  .notes-content {
+    white-space: pre-line;
+    color: var(--dark);
+    font-size: 14px;
+  }
+
+  .empty-notes {
+    color: var(--gray);
+    font-style: italic;
+    font-size: 14px;
+  }
+
+  /* Loading Animation */
+  .loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+  }
+
+  .loading-spinner {
+    width: 30px;
+    height: 30px;
+    border: 3px solid rgba(99, 102, 241, 0.1);
+    border-radius: 50%;
+    border-top-color: var(--primary);
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* Tooltip */
+  .tooltip {
+    position: relative;
+    cursor: pointer;
+  }
+
+  .tooltip:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--dark);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 100;
+    margin-bottom: 5px;
+  }
+
+  .tooltip:hover::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--dark);
+    margin-bottom: -5px;
+    z-index: 100;
+  }
+
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .form-row {
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .form-controls {
+      flex-direction: column;
+    }
+    
+    .search-filter, .action-buttons {
+      width: 100%;
+    }
+    
+    .action-buttons button {
+      flex: 1;
+    }
+    
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .hide-mobile {
+      display: none;
+    }
+
+    .header {
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .header-right {
+      text-align: center;
+    }
+
+    .user-info {
+      align-items: center;
+    }
+
+    .header h1 {
+      font-size: 1.8rem;
+    }
+
+    .header p {
+      font-size: 0.9rem;
+    }
+
+    .company-info-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .company-name-link {
+    color: var(--primary-dark);
+    text-decoration: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .company-name-link:hover {
+    color: var(--primary);
+    text-decoration: underline;
+  }
+
+  /* Apply Button Animation */
+  .apply-btn {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--radius);
+    font-weight: 500;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .apply-btn:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+
+  .apply-btn.applied {
+    background-color: var(--success);
+  }
+
+  .apply-btn i {
+    transition: all 0.3s ease;
+  }
+
+  .apply-btn:hover i {
+    transform: translateX(3px);
+  }
+
+  .apply-btn.applied i {
+    transform: scale(1.2);
+  }
+
+  .empty-state-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .empty-state-btn:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+
+  /* Status filter styling */
+  .status-filter {
+    min-width: 150px;
+  }
+
+  /* Action buttons container */
+  .actions-container {
+    display: flex;
+    gap: 5px;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-left">
+        <h1>Job Application Tracker</h1>
+        <p>Track, manage, and analyze your job search journey</p>
+      </div>
+      <div class="header-right">
+        <div class="user-info">
+          <div class="user-name">Praveen</div>
+          <div class="user-title">Passionate Full Stack Developer</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="tabs">
+      <button class="tab-button active" data-tab="applications">
+        <i class="fas fa-briefcase"></i> Applications
+      </button>
+      <button class="tab-button" data-tab="statistics">
+        <i class="fas fa-chart-pie"></i> Statistics
+      </button>
+    </div>
+    
+    <div id="applications" class="tab-content active">
+      <div class="form-controls">
+        <div class="search-filter">
+          <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search applications...">
+          </div>
+          <select id="statusFilter" class="status-filter">
+            <option value="all">All Statuses</option>
+            <option value="Applied">Applied</option>
+            <option value="Interview">Interview</option>
+            <option value="Offer">Offer</option>
+            <option value="Rejected">Rejected</option>
+            <option value="Ghosted">Ghosted</option>
+          </select>
+        </div>
+        <div class="action-buttons">
+          <button id="addButton" class="btn-primary">
+            <i class="fas fa-plus"></i> Add
+          </button>
+          <button id="exportButton" class="btn-secondary">
+            <i class="fas fa-download"></i> Export
+          </button>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="table-responsive">
+          <table id="applicationsTable">
+            <thead>
+              <tr>
+                <th>Company</th>
+                <th>Position</th>
+                <th class="hide-mobile">Location</th>
+                <th class="hide-mobile">Type</th>
+                <th class="hide-mobile">Mode</th>
+                <th>Date Applied</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="applicationsTableBody">
+              <!-- Table content will be added dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    
+    <div id="statistics" class="tab-content">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-briefcase"></i></div>
+          <div class="stat-value" id="totalApplications">0</div>
+          <div class="stat-label">Total Applications</div>
+          <div class="stat-detail" id="applicationsPerWeek">0 applications per week</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-reply"></i></div>
+          <div class="stat-value" id="responseRate">0%</div>
+          <div class="stat-label">Response Rate</div>
+          <div class="stat-detail" id="responseDetail">0 responses from 0 applications</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-trophy"></i></div>
+          <div class="stat-value" id="successRate">0%</div>
+          <div class="stat-label">Success Rate</div>
+          <div class="stat-detail" id="successDetail">0 offers from 0 applications</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-handshake"></i></div>
+          <div class="stat-value" id="interviewConversion">0%</div>
+          <div class="stat-label">Interview Conversion</div>
+          <div class="stat-detail" id="conversionDetail">0 offers from 0 interviews</div>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Status Breakdown</h3>
+        </div>
+        <div class="card-body">
+          <div id="statusBreakdown">
+            <!-- Status breakdown will be added dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Company Details View -->
+    <div id="companyDetails" class="tab-content">
+      <button id="backToApplications" class="back-button">
+        <i class="fas fa-arrow-left"></i> Back to Applications
+      </button>
+      
+      <div class="card">
+        <div class="card-body">
+          <div class="company-header">
+            <h2 class="company-name" id="companyDetailName">Company Name</h2>
+            <div class="company-logo" id="companyLogo">
+              <i class="fas fa-building"></i>
+            </div>
+          </div>
+          
+          <div class="company-info-grid">
+            <div class="company-info-item">
+              <div class="info-label">Position</div>
+              <div class="info-value" id="companyDetailPosition">Position Title</div>
+            </div>
+            <div class="company-info-item">
+              <div class="info-label">Location</div>
+              <div class="info-value" id="companyDetailLocation">Location</div>
+            </div>
+            <div class="company-info-item">
+              <div class="info-label">Job Type</div>
+              <div class="info-value" id="companyDetailType">Full-Time</div>
+            </div>
+            <div class="company-info-item">
+              <div class="info-label">Work Mode</div>
+              <div class="info-value" id="companyDetailMode">Remote</div>
+            </div>
+            <div class="company-info-item">
+              <div class="info-label">Compensation</div>
+              <div class="info-value" id="companyDetailPay">$80,000/year</div>
+            </div>
+            <div class="company-info-item">
+              <div class="info-label">Current Status</div>
+              <div class="info-value" id="companyDetailStatus">
+                <span class="status-badge status-applied">
+                  <i class="fas fa-paper-plane"></i> Applied
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="section-title">
+            <i class="fas fa-sticky-note"></i> Notes
+          </div>
+          <div class="notes-section">
+            <div class="notes-content" id="companyDetailNotes">No notes available.</div>
+          </div>
+          
+          <div class="section-title">
+            <i class="fas fa-history"></i> Application Timeline
+          </div>
+          <div class="application-history">
+            <div class="timeline" id="applicationTimeline">
+              <!-- Timeline items will be added dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Add/Edit Application Modal -->
+  <div class="modal-overlay" id="applicationModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle">Add Application</div>
+        <button class="modal-close" id="modalClose">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="applicationForm">
+          <input type="hidden" id="applicationId">
+          
+          <div class="form-row">
+            <div class="form-col">
+              <div class="form-group">
+                <label class="form-label" for="company">Company</label>
+                <input type="text" id="company" required>
+              </div>
+            </div>
+            <div class="form-col">
+              <div class="form-group">
+                <label class="form-label" for="position">Position</label>
+                <input type="text" id="position" required>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-col">
+              <div class="form-group">
+                <label class="form-label" for="location">Location</label>
+                <input type="text" id="location" required>
+              </div>
+            </div>
+            <div class="form-col">
+              <div class="form-group">
+                <label class="form-label" for="pay">Compensation</label>
+                <input type="text" id="pay" placeholder="e.g. $80,000/year">
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-col">
+              <div class="form-group">
+                <label class="form-label" for="type">Job Type</label>
+                <select id="type" required>
+                  <option value="Full-Time">Full-Time</option>
+                  <option value="Part-Time">Part-Time</option>
+                  <option value="Contract">Contract</option>
+                  <option value="Internship">Internship</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-col">
+              <div class="form-group">
+                <label class="form-label" for="mode">Work Mode</label>
+                <select id="mode" required>
+                  <option value="Remote">Remote</option>
+                  <option value="On-Site">On-Site</option>
+                  <option value="Hybrid">Hybrid</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-col">
+              <div class="form-group">
+                <label class="form-label" for="status">Status</label>
+                <select id="status" required>
+                  <option value="Applied">Applied</option>
+                  <option value="Interview">Interview</option>
+                  <option value="Offer">Offer</option>
+                  <option value="Rejected">Rejected</option>
+                  <option value="Ghosted">Ghosted</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="dateApplied">Date Applied</label>
+            <input type="date" id="dateApplied" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="notes">Notes</label>
+            <textarea id="notes" rows="3" placeholder="Add any notes about the application, interview process, etc."></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="cancelButton">Cancel</button>
+        <button id="saveButton" class="apply-btn">
+          <i class="fas fa-paper-plane"></i> Apply
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    // Application data structure
+    let applications = [];
+    let isEditing = false;
+    let currentApplication = null;
+
+    // DOM Elements
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const searchInput = document.getElementById('searchInput');
+    const statusFilter = document.getElementById('statusFilter');
+    const addButton = document.getElementById('addButton');
+    const exportButton = document.getElementById('exportButton');
+    const applicationModal = document.getElementById('applicationModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalClose = document.getElementById('modalClose');
+    const applicationForm = document.getElementById('applicationForm');
+    const cancelButton = document.getElementById('cancelButton');
+    const saveButton = document.getElementById('saveButton');
+    const applicationsTableBody = document.getElementById('applicationsTableBody');
+    const toastContainer = document.getElementById('toastContainer');
+    const backToApplicationsBtn = document.getElementById('backToApplications');
+
+    // Initialize the application
+    document.addEventListener('DOMContentLoaded', function() {
+      // Show loading animation
+      applicationsTableBody.innerHTML = `
+        <tr>
+          <td colspan="8" class="loading">
+            <div class="loading-spinner"></div>
+          </td>
+        </tr>
+      `;
+      
+      // Load applications from localStorage with a slight delay to show loading animation
+      setTimeout(() => {
+        loadApplications();
+        
+        // Set default date to today
+        document.getElementById('dateApplied').valueAsDate = new Date();
+        
+        // Update UI
+        updateApplicationsTable();
+        updateStatistics();
+        
+        // Add event listeners
+        tabButtons.forEach(button => {
+          button.addEventListener('click', () => {
+            const tabName = button.getAttribute('data-tab');
+            openTab(tabName);
+          });
+        });
+        
+        searchInput.addEventListener('input', updateApplicationsTable);
+        statusFilter.addEventListener('change', updateApplicationsTable);
+        
+        addButton.addEventListener('click', () => {
+          isEditing = false;
+          modalTitle.textContent = 'Add Application';
+          applicationForm.reset();
+          document.getElementById('dateApplied').valueAsDate = new Date();
+          openModal();
+        });
+        
+        exportButton.addEventListener('click', exportCSV);
+        
+        modalClose.addEventListener('click', closeModal);
+        cancelButton.addEventListener('click', closeModal);
+        
+        saveButton.addEventListener('click', function() {
+          // Add animation to the apply button
+          this.classList.add('applied');
+          this.innerHTML = '<i class="fas fa-check"></i> Applied!';
+          
+          // Save the application
+          saveApplication();
+          
+          // Reset button after delay
+          setTimeout(() => {
+            this.classList.remove('applied');
+            this.innerHTML = '<i class="fas fa-paper-plane"></i> Apply';
+          }, 2000);
+        });
+        
+        // Close modal when clicking outside
+        applicationModal.addEventListener('click', function(e) {
+          if (e.target === applicationModal) {
+            closeModal();
+          }
+        });
+
+        // Back button for company details
+        backToApplicationsBtn.addEventListener('click', () => {
+          openTab('applications');
+        });
+      }, 800);
+    });
+
+    // Tab functionality
+    function openTab(tabName) {
+      tabButtons.forEach(button => {
+        if (button.getAttribute('data-tab') === tabName) {
+          button.classList.add('active');
+        } else {
+          button.classList.remove('active');
+        }
+      });
+      
+      tabContents.forEach(content => {
+        if (content.id === tabName) {
+          content.classList.add('active');
+        } else {
+          content.classList.remove('active');
+        }
+      });
+    }
+
+    // Modal functionality
+    function openModal() {
+      applicationModal.classList.add('active');
+      document.body.style.overflow = 'hidden'; // Prevent scrolling
+    }
+    
+    function closeModal() {
+      applicationModal.classList.remove('active');
+      document.body.style.overflow = ''; // Re-enable scrolling
+    }
+
+    // Toast notification
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      
+      const icon = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+      
+      toast.innerHTML = `
+        <i class="${icon}"></i>
+        <div>${message}</div>
+      `;
+      
+      toastContainer.appendChild(toast);
+      
+      // Remove toast after animation completes
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
+    }
+
+    // Load applications from localStorage
+    function loadApplications() {
+      const savedApplications = localStorage.getItem('applications');
+      if (savedApplications) {
+        applications = JSON.parse(savedApplications);
+        
+        // Ensure all applications have an ID and notes field
+        applications = applications.map(app => {
+          if (!app.id) {
+            app.id = generateId();
+          }
+          if (!app.notes) {
+            app.notes = '';
+          }
+          if (!app.history) {
+            app.history = [{
+              date: app.dateApplied,
+              status: app.status,
+              description: `Initial application submitted`
+            }];
+          }
+          return app;
+        });
+      }
+    }
+
+    // Save applications to localStorage
+    function saveApplications() {
+      localStorage.setItem('applications', JSON.stringify(applications));
+    }
+
+    // Generate a unique ID
+    function generateId() {
+      return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+    }
+
+    // Format date for display
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    // Get status icon
+    function getStatusIcon(status) {
+      switch(status) {
+        case 'Applied': return 'fas fa-paper-plane';
+        case 'Interview': return 'fas fa-comments';
+        case 'Offer': return 'fas fa-check-circle';
+        case 'Rejected': return 'fas fa-times-circle';
+        case 'Ghosted': return 'fas fa-ghost';
+        default: return 'fas fa-question-circle';
+      }
+    }
+
+    // View company details
+    function viewCompanyDetails(id) {
+      const application = applications.find(app => app.id === id);
+      if (!application) return;
+      
+      currentApplication = application;
+      
+      // Set company details
+      document.getElementById('companyDetailName').textContent = application.company;
+      document.getElementById('companyDetailPosition').textContent = application.position;
+      document.getElementById('companyDetailLocation').textContent = application.location;
+      document.getElementById('companyDetailType').textContent = application.type;
+      document.getElementById('companyDetailMode').textContent = application.mode;
+      document.getElementById('companyDetailPay').textContent = application.pay || 'Not specified';
+      
+      // Set status badge
+      document.getElementById('companyDetailStatus').innerHTML = `
+        <span class="status-badge status-${application.status.toLowerCase()}">
+          <i class="${getStatusIcon(application.status)}"></i> ${application.status}
+        </span>
+      `;
+      
+      // Set notes
+      if (application.notes && application.notes.trim() !== '') {
+        document.getElementById('companyDetailNotes').textContent = application.notes;
+        document.getElementById('companyDetailNotes').classList.remove('empty-notes');
+      } else {
+        document.getElementById('companyDetailNotes').textContent = 'No notes available for this application.';
+        document.getElementById('companyDetailNotes').classList.add('empty-notes');
+      }
+      
+      // Set company logo (first letter of company name)
+      const logoElement = document.getElementById('companyLogo');
+      const firstLetter = application.company.charAt(0).toUpperCase();
+      logoElement.innerHTML = firstLetter;
+      
+      // Set application timeline
+      const timelineElement = document.getElementById('applicationTimeline');
+      timelineElement.innerHTML = '';
+      
+      if (application.history && application.history.length > 0) {
+        application.history.forEach(item => {
+          const timelineItem = document.createElement('div');
+          timelineItem.className = 'timeline-item';
+          
+          timelineItem.innerHTML = `
+            <div class="timeline-dot"></div>
+            <div class="timeline-date">${formatDate(item.date)}</div>
+            <div class="timeline-content">
+              <div class="timeline-title">${item.status}</div>
+              <div class="timeline-description">${item.description}</div>
+            </div>
+          `;
+          
+          timelineElement.appendChild(timelineItem);
+        });
+      } else {
+        // Create a default timeline item with the application date
+        const timelineItem = document.createElement('div');
+        timelineItem.className = 'timeline-item';
+        
+        timelineItem.innerHTML = `
+          <div class="timeline-dot"></div>
+          <div class="timeline-date">${formatDate(application.dateApplied)}</div>
+          <div class="timeline-content">
+            <div class="timeline-title">${application.status}</div>
+            <div class="timeline-description">Initial application submitted</div>
+          </div>
+        `;
+        
+        timelineElement.appendChild(timelineItem);
+      }
+      
+      // Show company details tab
+      openTab('companyDetails');
+    }
+
+    // Update applications table
+    function updateApplicationsTable() {
+      const searchTerm = searchInput.value.toLowerCase();
+      const statusFilterValue = statusFilter.value;
+      
+      // Filter applications
+      const filteredApplications = applications.filter(app => {
+        const matchesSearch = 
+          app.company.toLowerCase().includes(searchTerm) ||
+          app.position.toLowerCase().includes(searchTerm) ||
+          app.location.toLowerCase().includes(searchTerm);
+        
+        const matchesStatus = statusFilterValue === 'all' || app.status === statusFilterValue;
+        
+        return matchesSearch && matchesStatus;
+      });
+      
+      // Sort by date (newest first)
+      filteredApplications.sort((a, b) => new Date(b.dateApplied) - new Date(a.dateApplied));
+      
+      // Clear the table
+      applicationsTableBody.innerHTML = '';
+      
+      // Add rows to the table
+      if (filteredApplications.length === 0) {
+        applicationsTableBody.innerHTML = `
+          <tr>
+            <td colspan="8" class="empty-state">
+              <i class="fas fa-search"></i>
+              <p>No applications found</p>
+              <button class="empty-state-btn" id="emptyStateAddButton">
+                <i class="fas fa-plus"></i> Add Application
+              </button>
+            </td>
+          </tr>
+        `;
+        
+        // Add event listener to the empty state add button
+        const emptyStateAddButton = document.getElementById('emptyStateAddButton');
+        if (emptyStateAddButton) {
+          emptyStateAddButton.addEventListener('click', () => {
+            isEditing = false;
+            modalTitle.textContent = 'Add Application';
+            applicationForm.reset();
+            document.getElementById('dateApplied').valueAsDate = new Date();
+            openModal();
+          });
+        }
+      } else {
+        filteredApplications.forEach(app => {
+          const row = document.createElement('tr');
+          
+          row.innerHTML = `
+            <td>
+              <span class="company-name-link" data-id="${app.id}">
+                ${app.company} ${app.notes ? '<i class="fas fa-sticky-note" style="color: #f59e0b; font-size: 12px;"></i>' : ''}
+              </span>
+            </td>
+            <td>${app.position}</td>
+            <td class="hide-mobile">${app.location}</td>
+            <td class="hide-mobile">${app.type}</td>
+            <td class="hide-mobile">${app.mode}</td>
+            <td>${formatDate(app.dateApplied)}</td>
+            <td>
+              <span class="status-badge status-${app.status.toLowerCase()}">
+                <i class="${getStatusIcon(app.status)}"></i> ${app.status}
+              </span>
+            </td>
+            <td>
+              <div class="actions-container">
+                <button class="action-btn view-btn" data-id="${app.id}" title="View Details">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="action-btn edit-btn" data-id="${app.id}" title="Edit">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="action-btn delete-btn" data-id="${app.id}" title="Delete">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </div>
+            </td>
+          `;
+          
+          applicationsTableBody.appendChild(row);
+        });
+        
+        // Add event listeners to buttons
+        document.querySelectorAll('.view-btn').forEach(btn => {
+          btn.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            viewCompanyDetails(id);
+          });
+        });
+        
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+          btn.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            editApplication(id);
+          });
+        });
+        
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+          btn.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            deleteApplication(id);
+          });
+        });
+
+        // Add event listeners to company name links
+        document.querySelectorAll('.company-name-link').forEach(link => {
+          link.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            viewCompanyDetails(id);
+          });
+        });
+      }
+    }
+
+    // Update statistics with animation
+    function updateStatistics() {
+      // Calculate status counts
+      const statusCounts = {
+        Applied: 0,
+        Interview: 0,
+        Offer: 0,
+        Rejected: 0,
+        Ghosted: 0
+      };
+      
+      applications.forEach(app => {
+        if (statusCounts[app.status] !== undefined) {
+          statusCounts[app.status]++;
+        }
+      });
+      
+      // Total applications
+      const totalApplications = applications.length;
+      animateValue('totalApplications', 0, totalApplications, 1000);
+      
+      // Applications per week
+      const applicationsPerWeek = calculateApplicationsPerWeek();
+      document.getElementById('applicationsPerWeek').textContent = `${applicationsPerWeek} applications per week`;
+      
+      // Response rate
+      const responsesReceived = statusCounts.Interview + statusCounts.Offer + statusCounts.Rejected;
+      const responseRate = totalApplications > 0 ? Math.round((responsesReceived / totalApplications) * 100) : 0;
+      animateValue('responseRate', 0, responseRate, 1000, '%');
+      document.getElementById('responseDetail').textContent = `${responsesReceived} responses from ${totalApplications} applications`;
+      
+      // Success rate
+      const offersReceived = statusCounts.Offer;
+      const successRate = totalApplications > 0 ? Math.round((offersReceived / totalApplications) * 100) : 0;
+      animateValue('successRate', 0, successRate, 1000, '%');
+      document.getElementById('successDetail').textContent = `${offersReceived} offers from ${totalApplications} applications`;
+      
+      // Interview conversion
+      const interviewsReceived = statusCounts.Interview;
+      const interviewConversion = interviewsReceived > 0 ? Math.round((offersReceived / interviewsReceived) * 100) : 0;
+      animateValue('interviewConversion', 0, interviewConversion, 1000, '%');
+      document.getElementById('conversionDetail').textContent = `${offersReceived} offers from ${interviewsReceived} interviews`;
+      
+      // Status breakdown
+      const statusBreakdownEl = document.getElementById('statusBreakdown');
+      statusBreakdownEl.innerHTML = '';
+      
+      const statuses = ['Applied', 'Interview', 'Offer', 'Rejected', 'Ghosted'];
+      statuses.forEach(status => {
+        const count = statusCounts[status] || 0;
+        const percentage = totalApplications > 0 ? Math.round((count / totalApplications) * 100) : 0;
+        
+        const statusRow = document.createElement('div');
+        statusRow.className = 'progress-container';
+        statusRow.innerHTML = `
+          <div class="progress-label">
+            <div class="progress-status">
+              <span class="status-dot dot-${status.toLowerCase()}"></span>
+              <span>${status}</span>
+            </div>
+            <span>${count} (${percentage}%)</span>
+          </div>
+          <div class="progress-bar-container">
+            <div class="progress-bar progress-${status.toLowerCase()}" style="width: 0%"></div>
+          </div>
+        `;
+        
+        statusBreakdownEl.appendChild(statusRow);
+        
+        // Animate progress bar after a short delay
+        setTimeout(() => {
+          statusRow.querySelector('.progress-bar').style.width = `${percentage}%`;
+        }, 100);
+      });
+    }
+
+    // Animate value change
+    function animateValue(id, start, end, duration, suffix = '') {
+      const obj = document.getElementById(id);
+      let startTimestamp = null;
+      const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        const value = Math.floor(progress * (end - start) + start);
+        obj.textContent = value + suffix;
+        if (progress < 1) {
+          window.requestAnimationFrame(step);
+        }
+      };
+      window.requestAnimationFrame(step);
+    }
+
+    // Calculate applications per week
+    function calculateApplicationsPerWeek() {
+      if (applications.length === 0) return 0;
+      
+      const dates = applications.map(app => new Date(app.dateApplied).getTime());
+      const oldestDate = Math.min(...dates);
+      const newestDate = Math.max(...dates);
+      
+      const daysDifference = (newestDate - oldestDate) / (1000 * 60 * 60 * 24);
+      const weeksDifference = daysDifference / 7 || 1; // Avoid division by zero
+      
+      return Math.round(applications.length / weeksDifference);
+    }
+
+    // Save application
+    function saveApplication() {
+      // Get form data
+      const applicationId = document.getElementById('applicationId').value;
+      const company = document.getElementById('company').value;
+      const position = document.getElementById('position').value;
+      const location = document.getElementById('location').value;
+      const type = document.getElementById('type').value;
+      const mode = document.getElementById('mode').value;
+      const pay = document.getElementById('pay').value;
+      const dateApplied = document.getElementById('dateApplied').value;
+      const status = document.getElementById('status').value;
+      const notes = document.getElementById('notes').value;
+      
+      if (!company || !position || !location || !dateApplied || !status) {
+        showToast('Please fill in all required fields.', 'error');
+        return;
+      }
+      
+      if (isEditing) {
+        // Update existing application
+        const index = applications.findIndex(app => app.id === applicationId);
+        if (index !== -1) {
+          const oldApp = applications[index];
+          const oldStatus = oldApp.status;
+          
+          // Check if status has changed
+          if (oldStatus !== status) {
+            // Add to history
+            if (!oldApp.history) {
+              oldApp.history = [];
+            }
+            
+            oldApp.history.push({
+              date: new Date().toISOString().split('T')[0],
+              status: status,
+              description: `Status changed from ${oldStatus} to ${status}`
+            });
+          }
+          
+          applications[index] = {
+            ...oldApp,
+            company,
+            position,
+            location,
+            type,
+            mode,
+            pay,
+            dateApplied,
+            status,
+            notes
+          };
+          
+          showToast('Application updated successfully!');
+        }
+      } else {
+        // Add new application
+        const newApp = {
+          id: applicationId || generateId(),
+          company,
+          position,
+          location,
+          type,
+          mode,
+          pay,
+          dateApplied,
+          status,
+          notes,
+          history: [{
+            date: dateApplied,
+            status: status,
+            description: `Initial application submitted`
+          }]
+        };
+        
+        applications.push(newApp);
+        showToast('Application added successfully!');
+      }
+      
+      // Save to localStorage
+      saveApplications();
+      
+      // Update UI
+      updateApplicationsTable();
+      updateStatistics();
+      
+      // Close modal
+      closeModal();
+    }
+
+    // Edit application
+    function editApplication(id) {
+      const application = applications.find(app => app.id === id);
+      if (!application) return;
+      
+      // Set form values
+      document.getElementById('applicationId').value = application.id;
+      document.getElementById('company').value = application.company;
+      document.getElementById('position').value = application.position;
+      document.getElementById('location').value = application.location;
+      document.getElementById('type').value = application.type;
+      document.getElementById('mode').value = application.mode;
+      document.getElementById('pay').value = application.pay || '';
+      document.getElementById('dateApplied').value = application.dateApplied;
+      document.getElementById('status').value = application.status;
+      document.getElementById('notes').value = application.notes || '';
+      
+      // Set modal title
+      modalTitle.textContent = 'Edit Application';
+      
+      // Set editing flag
+      isEditing = true;
+      
+      // Show modal
+      openModal();
+    }
+
+    // Delete application
+    function deleteApplication(id) {
+      if (confirm('Are you sure you want to delete this application?')) {
+        applications = applications.filter(app => app.id !== id);
+        saveApplications();
+        updateApplicationsTable();
+        updateStatistics();
+        showToast('Application deleted successfully!');
+      }
+    }
+
+    // Export to CSV
+    function exportCSV() {
+      if (applications.length === 0) {
+        showToast('No applications to export.', 'error');
+        return;
+      }
+      
+      const headers = ['Company', 'Position', 'Location', 'Type', 'Mode', 'Pay', 'Date Applied', 'Status', 'Notes'];
+      const rows = applications.map(app => [
+        app.company,
+        app.position,
+        app.location,
+        app.type,
+        app.mode,
+        app.pay || '',
+        app.dateApplied,
+        app.status,
+        app.notes || ''
+      ]);
+      
+      const csvContent = [
+        headers.join(','),
+        ...rows.map(row => row.map(cell => `"${cell || ''}"`).join(','))
+      ].join('\n');
+      
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'job-applications.csv';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      showToast('CSV file exported successfully!');
+    }
+  </script>
+</body>
+</html>
